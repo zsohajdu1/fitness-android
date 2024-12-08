@@ -1,18 +1,20 @@
 package aut.bme.hu.fitness.presentation.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import aut.bme.hu.fitness.common.ext.isValidEmail
 import aut.bme.hu.fitness.domain.repository.UserProfileRepository
-import aut.bme.hu.fitness.domain.repository.UserRepository
-import aut.bme.hu.fitness.presentation.home.HomeViewModel.HomeUiState
+import aut.bme.hu.fitness.domain.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val userRepository: UserRepository,
+    private val authService: AuthService,
     private val userProfileRepository: UserProfileRepository
 ) : ViewModel() {
 
@@ -20,7 +22,7 @@ class LoginViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     data class LoginUiData(
-        val username: String,
+        val email: String,
         val password: String
     )
 
@@ -48,7 +50,7 @@ class LoginViewModel @Inject constructor(
     fun onUsernameChanged(value: String) {
         _uiState.update {
             if (it is LoginUiState.Created) {
-                it.copy(data = it.data.copy(username = value))
+                it.copy(data = it.data.copy(email = value))
             } else {
                 it
             }
@@ -66,6 +68,22 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onLoginClick() {
-        TODO("Not yet implemented")
+        val state = uiState.value as LoginUiState.Created
+        if (!state.data.email.isValidEmail()) {
+            _uiState.value = LoginUiState.Error("Enter a valid email")
+        } else if (state.data.password.isBlank()) {
+            _uiState.value = LoginUiState.Error("Enter a valid password")
+        } else viewModelScope.launch {
+            try {
+                authService.authenticate(state.data.email, state.data.password)
+                if (userProfileRepository.getUserProfileExists()) {
+                    _uiState.value = LoginUiState.SuccessWithoutProfile
+                } else {
+                    _uiState.value = LoginUiState.SuccessWithProfile
+                }
+            } catch (e: Exception) {
+                _uiState.value = LoginUiState.Error(e.message ?: "Unknown error")
+            }
+        }
     }
 }

@@ -46,15 +46,17 @@ class HomeViewModel @Inject constructor(
             try {
                 val userProfile = userProfileRepository.getUserProfile()
                 val calorieIntakes = calorieIntakeRepository.getDateCalorieIntakes(LocalDate.now())
-                val data = HomeUiData(
-                    userProfile,
-                    calorieIntakes,
-                    false,
-                    "",
-                    0.0,
-                    0
-                )
-                _uiState.value = HomeUiState.Success(data)
+                val data = userProfile?.let {
+                    HomeUiData(
+                        it,
+                        calorieIntakes,
+                        false,
+                        "",
+                        0.0,
+                        0
+                    )
+                }
+                _uiState.value = data?.let { HomeUiState.Success(it) }!!
             } catch (e: Exception) {
                 _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
             }
@@ -106,15 +108,19 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (_uiState.value is HomeUiState.Success) {
-                    val calorieIntake = CalorieIntake(
-                        id = null,
-                        userId = (_uiState.value as HomeUiState.Success).data.userProfile.userId,
-                        date = LocalDate.now(),
-                        name = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeName,
-                        calories = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeCalories,
-                        quantity = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeQuantity
-                    )
-                    calorieIntakeRepository.createCalorieIntake(calorieIntake)
+                    val calorieIntake = (_uiState.value as HomeUiState.Success).data.userProfile.uid?.let {
+                        CalorieIntake(
+                            id = null,
+                            uid = it,
+                            date = LocalDate.now(),
+                            name = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeName,
+                            calories = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeCalories,
+                            quantity = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeQuantity
+                        )
+                    }
+                    if (calorieIntake != null) {
+                        calorieIntakeRepository.createCalorieIntake(calorieIntake)
+                    }
                     onCreatingCalorieIntakeChanged(false)
                     refresh()
                 }

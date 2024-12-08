@@ -1,26 +1,46 @@
 package aut.bme.hu.fitness.domain.repository.impl
 
-import aut.bme.hu.fitness.domain.api.RetrofitInstance
+import aut.bme.hu.fitness.domain.api.ApiService
 import aut.bme.hu.fitness.domain.model.CalorieIntake
 import aut.bme.hu.fitness.domain.repository.CalorieIntakeRepository
+import aut.bme.hu.fitness.domain.service.AuthService
 import java.time.LocalDate
+import javax.inject.Inject
 
-class CalorieIntakeRepositoryImpl : CalorieIntakeRepository {
-    private val api = RetrofitInstance.api
+class CalorieIntakeRepositoryImpl @Inject constructor(
+    private val api: ApiService,
+    private val authService: AuthService
+) : CalorieIntakeRepository {
 
     override suspend fun getDateCalorieIntakes(date: LocalDate): List<CalorieIntake> {
-        return api.getDateCalorieIntakes(date)
+        try {
+            return api.getDateCalorieIntakes(date, authService.currentUserId)
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     override suspend fun createCalorieIntake(calorieIntake: CalorieIntake) {
-        api.createCalorieIntake(calorieIntake)
+        try {
+            api.createCalorieIntake(calorieIntake)
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     override suspend fun saveCalorieIntake(calorieIntake: CalorieIntake) {
-        api.saveCalorieIntake(calorieIntake)
+        try {
+            api.saveCalorieIntake(calorieIntake)
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     override suspend fun deleteCalorieIntake(calorieIntake: CalorieIntake) {
-        api.deleteCalorieIntake(calorieIntake)
+        try {
+            calorieIntake.id?.let { api.deleteCalorieIntake(it) }
+        } catch (e: Exception) {
+            throw e
+        }
     }
 }

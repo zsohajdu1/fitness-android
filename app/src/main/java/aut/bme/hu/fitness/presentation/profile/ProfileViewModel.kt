@@ -7,6 +7,7 @@ import aut.bme.hu.fitness.domain.model.enums.ActivityLevel
 import javax.inject.Inject
 
 import aut.bme.hu.fitness.domain.repository.UserProfileRepository
+import aut.bme.hu.fitness.domain.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userProfileRepository: UserProfileRepository
+    private val userProfileRepository: UserProfileRepository,
+    private val authService: AuthService
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -41,13 +43,15 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val userProfile = userProfileRepository.getUserProfile()
-                val data = ProfileUiData(
-                    userProfile,
-                    userProfile.height,
-                    userProfile.weight,
-                    userProfile.activityLevel
-                )
-                _uiState.value = ProfileUiState.Success(data)
+                val data = userProfile?.let {
+                    ProfileUiData(
+                        it,
+                        userProfile.height,
+                        userProfile.weight,
+                        userProfile.activityLevel
+                    )
+                }
+                _uiState.value = data?.let { ProfileUiState.Success(it) }!!
             } catch (e: Exception) {
                 _uiState.value = ProfileUiState.Error(e.message ?: "Unknown error")
             }
@@ -98,10 +102,11 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (_uiState.value is ProfileUiState.Success) {
+                    _uiState.value = ProfileUiState.Loading
                     val userProfile = (_uiState.value as ProfileUiState.Success).data.userProfile
                     val newUserProfile = UserProfile(
                         id = userProfile.id,
-                        userId = userProfile.userId,
+                        uid = userProfile.uid,
                         birthDate = userProfile.birthDate,
                         gender = userProfile.gender,
                         height = (_uiState.value as ProfileUiState.Success).data.newHeight,
@@ -115,6 +120,16 @@ class ProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = ProfileUiState.Error(e.message ?: "Unknown error")
             }
+        }
+    }
+
+    fun onLogOut() {
+        try {
+            viewModelScope.launch {
+                authService.signOut()
+            }
+        } catch (e: Exception) {
+            _uiState.value = ProfileUiState.Error(e.message ?: "Unknown error")
         }
     }
 }

@@ -12,25 +12,34 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.hilt.navigation.compose.hiltViewModel
+import aut.bme.hu.fitness.CREATION_SCREEN
+import aut.bme.hu.fitness.SPLASH_SCREEN
 import aut.bme.hu.fitness.presentation.home.HomeScreen
 import aut.bme.hu.fitness.presentation.journal.JournalScreen
 import aut.bme.hu.fitness.presentation.profile.ProfileScreen
 
 @Composable
 fun MainScreen(
-    logOut: () -> Unit,
+    navigateTo: (String) -> Unit,
+    viewModel: MainScreenViewModel = hiltViewModel()
 ) {
     val navItemList = listOf(
         NavItem("Journal", Icons.Default.DateRange),
         NavItem("Home", Icons.Default.Home),
         NavItem("Profile", Icons.Default.AccountCircle)
     )
+
+    LaunchedEffect(true) {
+        viewModel.refresh(navigateTo)
+    }
 
     var selectedIndex by remember {
         mutableIntStateOf(1)
@@ -56,14 +65,18 @@ fun MainScreen(
                             Text(text = navItem.label)
                         }
                     )
-
                 }
             }
         }
     ) { innerPadding ->
-        ContentScreen(modifier = Modifier.padding(innerPadding), selectedIndex = selectedIndex, logOut)
+        ContentScreen(
+            modifier = Modifier.padding(innerPadding),
+            selectedIndex = selectedIndex,
+            { navigateTo(SPLASH_SCREEN) }
+        )
     }
 }
+
 
 data class NavItem(
     val label: String,
