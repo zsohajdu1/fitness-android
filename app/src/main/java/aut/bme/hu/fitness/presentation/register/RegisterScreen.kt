@@ -18,8 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import aut.bme.hu.fitness.compose.ErrorDialog
 
 @Composable
 fun RegisterScreen(
@@ -31,30 +31,31 @@ fun RegisterScreen(
     LaunchedEffect(true) {
         viewModel.refresh()
     }
-
-    when (val state = uiState) {
-        is RegisterViewModel.RegisterUiState.Loading -> {
-            CircularProgressIndicator()
-        }
-
-        is RegisterViewModel.RegisterUiState.Error -> {
-            Dialog(onDismissRequest = { }) {
-                Text(text = state.message)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(60.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        when (val state = uiState) {
+            is RegisterViewModel.RegisterUiState.Loading -> {
+                CircularProgressIndicator()
             }
-        }
 
-        is RegisterViewModel.RegisterUiState.Success -> {
-            navigateTo()
-        }
+            is RegisterViewModel.RegisterUiState.Error -> {
+                ErrorDialog(
+                    message = state.message,
+                    onDismiss = viewModel::refresh
+                )
+            }
 
-        is RegisterViewModel.RegisterUiState.Created -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(60.dp),
-                contentAlignment = Alignment.Center
-            ) {
+            is RegisterViewModel.RegisterUiState.Success -> {
+                navigateTo()
+            }
+
+            is RegisterViewModel.RegisterUiState.Created -> {
+
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -62,9 +63,9 @@ fun RegisterScreen(
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        value = state.data.username,
-                        onValueChange = viewModel::onUsernameChanged,
-                        label = { Text(text = "Username") }
+                        value = state.data.email,
+                        onValueChange = viewModel::onEmailChanged,
+                        label = { Text(text = "Email") }
                     )
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),

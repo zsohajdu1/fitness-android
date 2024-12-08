@@ -7,12 +7,17 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.DELETE
+import retrofit2.http.Headers
+import retrofit2.http.Query
 import java.time.LocalDate
 
 interface ApiService {
 
     @GET("/api/userprofile")
-    suspend fun getUserProfile(): UserProfile
+    suspend fun getUserProfile(@Query("uid") uid: String): UserProfile?
+
+    @GET("/api/userprofile/exists")
+    suspend fun getUserProfileExists(@Query("uid") uid: String): Boolean
 
     @PUT("/api/userprofile")
     suspend fun saveUserProfile(@Body request: UserProfile)
@@ -21,7 +26,7 @@ interface ApiService {
     suspend fun createUserProfile(@Body request: UserProfile)
 
     @GET("/api/calorieintakes/date")
-    suspend fun getDateCalorieIntakes(@Body request: LocalDate): List<CalorieIntake>
+    suspend fun getDateCalorieIntakes(@Query("date") request: LocalDate, @Query("uid") uid: String): List<CalorieIntake>
 
     @POST("/api/calorieintakes")
     suspend fun createCalorieIntake(@Body request: CalorieIntake)
@@ -30,16 +35,6 @@ interface ApiService {
     suspend fun saveCalorieIntake(@Body request: CalorieIntake)
 
     @DELETE("/api/calorieintakes")
-    suspend fun deleteCalorieIntake(@Body request: CalorieIntake)
+    suspend fun deleteCalorieIntake(@Query("id") request: Long)
 
-    @POST("/auth/register")
-    suspend fun registerUser(@Body request: UserRequest)
-
-    @POST("/auth/login")
-    suspend fun loginUser(@Body request: UserRequest)
-
-    @POST("/auth/logout")
-    suspend fun logoutUser()
 }
-
-data class UserRequest(val username: String, val password: String)

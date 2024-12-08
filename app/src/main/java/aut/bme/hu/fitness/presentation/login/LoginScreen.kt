@@ -22,6 +22,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import aut.bme.hu.fitness.CREATION_SCREEN
 import aut.bme.hu.fitness.MAIN_SCREEN
+import aut.bme.hu.fitness.compose.ErrorDialog
 
 @Composable
 fun LoginScreen(
@@ -33,34 +34,35 @@ fun LoginScreen(
     LaunchedEffect(true) {
         viewModel.refresh()
     }
-
-    when (val state = uiState) {
-        is LoginViewModel.LoginUiState.Loading -> {
-            CircularProgressIndicator()
-        }
-
-        is LoginViewModel.LoginUiState.Error -> {
-            Dialog(onDismissRequest = { }) {
-                Text(text = state.message)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(60.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        when (val state = uiState) {
+            is LoginViewModel.LoginUiState.Loading -> {
+                CircularProgressIndicator()
             }
-        }
 
-        is LoginViewModel.LoginUiState.SuccessWithProfile -> {
-            navigateTo(MAIN_SCREEN)
-        }
+            is LoginViewModel.LoginUiState.Error -> {
+                ErrorDialog(
+                    message = state.message,
+                    onDismiss = viewModel::refresh
+                )
+            }
 
-        is LoginViewModel.LoginUiState.SuccessWithoutProfile -> {
-            navigateTo(CREATION_SCREEN)
-        }
+            is LoginViewModel.LoginUiState.SuccessWithProfile -> {
+                navigateTo(MAIN_SCREEN)
+            }
 
-        is LoginViewModel.LoginUiState.Created -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(60.dp),
-                contentAlignment = Alignment.Center
-            ) {
+            is LoginViewModel.LoginUiState.SuccessWithoutProfile -> {
+                navigateTo(CREATION_SCREEN)
+            }
+
+            is LoginViewModel.LoginUiState.Created -> {
+
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -68,9 +70,9 @@ fun LoginScreen(
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        value = state.data.username,
+                        value = state.data.email,
                         onValueChange = viewModel::onUsernameChanged,
-                        label = { Text(text = "Username") }
+                        label = { Text(text = "Email") }
                     )
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
@@ -82,11 +84,10 @@ fun LoginScreen(
                     )
                     Button(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = viewModel::onLoginClick
+                        onClick = { viewModel.onLoginClick() }
                     ) {
                         Text("Login")
                     }
-
                 }
             }
         }
