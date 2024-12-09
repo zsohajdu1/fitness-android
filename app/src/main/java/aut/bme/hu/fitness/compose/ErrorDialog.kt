@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
 @Composable
-fun ErrorDialog (
+fun ErrorDialog(
     message: String,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,

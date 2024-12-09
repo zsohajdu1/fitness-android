@@ -16,6 +16,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,11 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import aut.bme.hu.fitness.compose.ErrorDialog
 import aut.bme.hu.fitness.domain.model.enums.ActivityLevel
+
 
 @Composable
 fun ProfileScreen(
@@ -46,7 +47,7 @@ fun ProfileScreen(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(60.dp),
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         when (val state = uiState) {
@@ -65,7 +66,11 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = "Your profile")
+                    Text(
+                        text = "Your Profile",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                     OutlinedTextField(modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         value = state.data.userProfile.birthDate.toString(),

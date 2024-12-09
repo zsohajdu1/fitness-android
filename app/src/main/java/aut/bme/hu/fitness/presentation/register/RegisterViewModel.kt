@@ -3,7 +3,7 @@ package aut.bme.hu.fitness.presentation.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import aut.bme.hu.fitness.common.ext.isValidEmail
-import aut.bme.hu.fitness.domain.repository.UserProfileRepository
+import aut.bme.hu.fitness.common.ext.isValidPassword
 import aut.bme.hu.fitness.domain.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,17 +14,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val authService: AuthService,
-    private val userProfileRepository: UserProfileRepository
+    private val authService: AuthService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<RegisterUiState>(RegisterUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     data class RegisterUiData(
-        val email: String,
-        val password: String,
-        val repeatPassword: String
+        val email: String, val password: String, val repeatPassword: String
     )
 
     sealed class RegisterUiState {
@@ -41,9 +38,7 @@ class RegisterViewModel @Inject constructor(
     fun refresh() {
         _uiState.value = RegisterUiState.Loading
         val data = RegisterUiData(
-            "",
-            "",
-            ""
+            "", "", ""
         )
         _uiState.value = RegisterUiState.Created(data)
     }
@@ -83,7 +78,7 @@ class RegisterViewModel @Inject constructor(
         val state = uiState.value as RegisterUiState.Created
         if (!state.data.email.isValidEmail()) {
             _uiState.value = RegisterUiState.Error("Enter a valid email")
-        } else if (state.data.password.isBlank()) {
+        } else if (!state.data.password.isValidPassword()) {
             _uiState.value = RegisterUiState.Error("Enter a valid password")
         } else if (state.data.password != state.data.repeatPassword) {
             _uiState.value = RegisterUiState.Error("Passwords do not match")

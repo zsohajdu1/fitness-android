@@ -8,8 +8,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class CalorieIntakeRepositoryImpl @Inject constructor(
-    private val api: ApiService,
-    private val authService: AuthService
+    private val api: ApiService, private val authService: AuthService
 ) : CalorieIntakeRepository {
 
     override suspend fun getDateCalorieIntakes(date: LocalDate): List<CalorieIntake> {

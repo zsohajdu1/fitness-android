@@ -4,12 +4,10 @@ import aut.bme.hu.fitness.domain.api.ApiService
 import aut.bme.hu.fitness.domain.model.UserProfile
 import aut.bme.hu.fitness.domain.repository.UserProfileRepository
 import aut.bme.hu.fitness.domain.service.AuthService
-import retrofit2.HttpException
 import javax.inject.Inject
 
 class UserProfileRepositoryImpl @Inject constructor(
-    private val api: ApiService,
-    private val authService: AuthService
+    private val api: ApiService, private val authService: AuthService
 ) : UserProfileRepository {
 
     override suspend fun getUserProfile(): UserProfile? {

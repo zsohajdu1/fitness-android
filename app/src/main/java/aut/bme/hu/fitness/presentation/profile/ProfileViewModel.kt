@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import aut.bme.hu.fitness.domain.model.UserProfile
 import aut.bme.hu.fitness.domain.model.enums.ActivityLevel
-import javax.inject.Inject
-
 import aut.bme.hu.fitness.domain.repository.UserProfileRepository
 import aut.bme.hu.fitness.domain.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,11 +11,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userProfileRepository: UserProfileRepository,
-    private val authService: AuthService
+    private val userProfileRepository: UserProfileRepository, private val authService: AuthService
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -45,10 +43,7 @@ class ProfileViewModel @Inject constructor(
                 val userProfile = userProfileRepository.getUserProfile()
                 val data = userProfile?.let {
                     ProfileUiData(
-                        it,
-                        userProfile.height,
-                        userProfile.weight,
-                        userProfile.activityLevel
+                        it, userProfile.height, userProfile.weight, userProfile.activityLevel
                     )
                 }
                 _uiState.value = data?.let { ProfileUiState.Success(it) }!!
@@ -102,7 +97,6 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (_uiState.value is ProfileUiState.Success) {
-                    _uiState.value = ProfileUiState.Loading
                     val userProfile = (_uiState.value as ProfileUiState.Success).data.userProfile
                     val newUserProfile = UserProfile(
                         id = userProfile.id,
@@ -114,6 +108,7 @@ class ProfileViewModel @Inject constructor(
                         activityLevel = (_uiState.value as ProfileUiState.Success).data.newActivityLevel,
                         tdee = userProfile.tdee
                     )
+                    _uiState.value = ProfileUiState.Loading
                     userProfileRepository.saveUserProfile(newUserProfile)
                     refresh()
                 }

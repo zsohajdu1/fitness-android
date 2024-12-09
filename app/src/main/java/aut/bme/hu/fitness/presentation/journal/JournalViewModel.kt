@@ -20,8 +20,7 @@ class JournalViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     data class JournalUiData(
-        val calorieIntakes: List<CalorieIntake>,
-        val date: LocalDate = LocalDate.now()
+        val calorieIntakes: List<CalorieIntake>, val date: LocalDate = LocalDate.now()
     )
 
     sealed class JournalUiState {
@@ -38,8 +37,7 @@ class JournalViewModel @Inject constructor(
             try {
                 val calorieIntakes = calorieIntakeRepository.getDateCalorieIntakes(date)
                 val data = JournalUiData(
-                    calorieIntakes,
-                    date
+                    calorieIntakes, date
                 )
                 _uiState.value = JournalUiState.Success(data)
             } catch (e: Exception) {

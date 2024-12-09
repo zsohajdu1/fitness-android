@@ -18,9 +18,8 @@ class AuthInterceptor @Inject constructor(
         }
 
         val token = runBlocking { authService.getAuthToken() }
-        val modifiedRequest: Request = originalRequest.newBuilder()
-            .header("Authorization", "Bearer $token")
-            .build()
+        val modifiedRequest: Request =
+            originalRequest.newBuilder().header("Authorization", "Bearer $token").build()
 
         return chain.proceed(modifiedRequest)
     }

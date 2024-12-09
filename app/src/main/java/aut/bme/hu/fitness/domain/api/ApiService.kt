@@ -3,11 +3,10 @@ package aut.bme.hu.fitness.domain.api
 import aut.bme.hu.fitness.domain.model.CalorieIntake
 import aut.bme.hu.fitness.domain.model.UserProfile
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
-import retrofit2.http.DELETE
-import retrofit2.http.Headers
 import retrofit2.http.Query
 import java.time.LocalDate
 
@@ -26,7 +25,9 @@ interface ApiService {
     suspend fun createUserProfile(@Body request: UserProfile)
 
     @GET("/api/calorieintakes/date")
-    suspend fun getDateCalorieIntakes(@Query("date") request: LocalDate, @Query("uid") uid: String): List<CalorieIntake>
+    suspend fun getDateCalorieIntakes(
+        @Query("date") request: LocalDate, @Query("uid") uid: String
+    ): List<CalorieIntake>
 
     @POST("/api/calorieintakes")
     suspend fun createCalorieIntake(@Body request: CalorieIntake)

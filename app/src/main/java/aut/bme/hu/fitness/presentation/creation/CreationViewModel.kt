@@ -1,17 +1,12 @@
 package aut.bme.hu.fitness.presentation.creation
 
-import android.util.Log
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import aut.bme.hu.fitness.common.ext.isValidEmail
 import aut.bme.hu.fitness.domain.model.UserProfile
 import aut.bme.hu.fitness.domain.model.enums.ActivityLevel
 import aut.bme.hu.fitness.domain.model.enums.Gender
 import aut.bme.hu.fitness.domain.repository.UserProfileRepository
 import aut.bme.hu.fitness.domain.service.AuthService
-import aut.bme.hu.fitness.presentation.register.RegisterViewModel.RegisterUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,13 +19,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreationViewModel @Inject constructor(
-    private val userProfileRepository: UserProfileRepository,
-    private val authService: AuthService
+    private val userProfileRepository: UserProfileRepository, private val authService: AuthService
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<CreationUiState>(CreationUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    data class CreationUiData constructor(
+    data class CreationUiData(
         val height: Int,
         val weight: Int,
         val birthDate: LocalDate,
@@ -53,11 +47,7 @@ class CreationViewModel @Inject constructor(
     fun refresh() {
         _uiState.value = CreationUiState.Loading
         val data = CreationUiData(
-            0,
-            0,
-            LocalDate.now(),
-            Gender.Male,
-            ActivityLevel.Sedentary
+            0, 0, LocalDate.now(), Gender.Male, ActivityLevel.Sedentary
         )
         _uiState.value = CreationUiState.Success(data)
     }
@@ -84,7 +74,7 @@ class CreationViewModel @Inject constructor(
 
     fun onBirthDateChanged(value: Long?) {
         if (value == null) return
-        val date = Instant.ofEpochMilli(value).atZone(ZoneId.systemDefault()).toLocalDate();
+        val date = Instant.ofEpochMilli(value).atZone(ZoneId.systemDefault()).toLocalDate()
         _uiState.update {
             if (it is CreationUiState.Success) {
                 it.copy(data = it.data.copy(birthDate = date))
