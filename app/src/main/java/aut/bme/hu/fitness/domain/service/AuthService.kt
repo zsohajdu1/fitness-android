@@ -1,6 +1,5 @@
 package aut.bme.hu.fitness.domain.service
 
-import kotlinx.coroutines.flow.Flow
 
 interface AuthService {
     val currentUserId: String

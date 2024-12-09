@@ -14,16 +14,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authService: AuthService,
-    private val userProfileRepository: UserProfileRepository
+    private val authService: AuthService, private val userProfileRepository: UserProfileRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     data class LoginUiData(
-        val email: String,
-        val password: String
+        val email: String, val password: String
     )
 
     sealed class LoginUiState {
@@ -41,8 +39,7 @@ class LoginViewModel @Inject constructor(
     fun refresh() {
         _uiState.value = LoginUiState.Loading
         val data = LoginUiData(
-            "",
-            ""
+            "", ""
         )
         _uiState.value = LoginUiState.Created(data)
     }

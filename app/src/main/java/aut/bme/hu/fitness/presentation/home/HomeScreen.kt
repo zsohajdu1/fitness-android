@@ -5,12 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -18,6 +19,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,11 +34,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import aut.bme.hu.fitness.compose.ErrorDialog
-import org.jetbrains.letsPlot.Figure
-import org.jetbrains.letsPlot.Stat
-import org.jetbrains.letsPlot.geom.geomPie
-import org.jetbrains.letsPlot.letsPlot
-import org.jetbrains.letsPlot.skia.compose.PlotPanel
+import aut.bme.hu.fitness.compose.InfoCard
+import aut.bme.hu.fitness.compose.InfoRow
+import aut.bme.hu.fitness.compose.IntakeCard
+
 
 @Composable
 fun HomeScreen(
@@ -50,9 +51,8 @@ fun HomeScreen(
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(60.dp),
+            .fillMaxSize()
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         when (val state = uiState) {
@@ -71,117 +71,54 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(4.dp)
-
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    /*
-                    state.data.userProfile.tdee?.let {
-                        createPanel(
-                            it,
-                            state.data.calorieIntakes.sumOf { it.calories })
-                    }?.let {
-                        PlotPanel(
-                            figure = it,
-                            preserveAspectRatio = true,
-                            modifier = Modifier.fillMaxSize()
-                        ) {}
-                    }*/
-                    Card {
-                        Column(
-                            modifier = Modifier
-                                .padding(4.dp)
-
-                        ) {
-                            Text(text = "Total Daily Energy Expenditure: " + state.data.userProfile.tdee.toString())
-                            Text(text = "Total Calories: " + state.data.calorieIntakes.sumOf { it.calories }.toString())
-                        }
-                    }
-                    Card {
-                        IconButton(
-                            onClick = { viewModel.onCreatingCalorieIntakeChanged(true) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Add calorie intake"
-                            )
-                        }
-                        Spacer(
-                            modifier = Modifier.height(4.dp)
-                        )
-                        state.data.calorieIntakes.forEach {
-                            Card {
-                                Text(text = it.name + " " + it.calories + " " + it.quantity + " " + it.calories * it.quantity)
+                    Spacer(
+                        modifier = Modifier.height(30.dp)
+                    )
+                    InfoCard(
+                        title = "Overview",
+                        content = {
+                            Column {
+                                InfoRow(label = "Total Daily Energy Expenditure", value = state.data.userProfile.tdee?.toInt().toString())
+                                InfoRow(label = "Total Calories", value = state.data.calorieIntakes.sumOf { it.calories.toInt() }.toString())
                             }
                         }
-                    }
-                    when {
-                        state.data.creatingCalorieIntake -> {
-                            Dialog(onDismissRequest = {
-                                viewModel.onCreatingCalorieIntakeChanged(
-                                    false
-                                )
-                            }) {
-                                Card {
-                                    Column (
-                                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = Modifier.padding(8.dp)
-
-                                    ) {
-                                        Text(text = "Create calorie intake")
-                                        OutlinedTextField(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            singleLine = true,
-                                            value = state.data.creatingCalorieIntakeName,
-                                            onValueChange = viewModel::onCreatingCalorieIntakeNameChanged,
-                                            label = { Text(text = "Name") }
-                                        )
-                                        OutlinedTextField(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            singleLine = true,
-                                            value = state.data.creatingCalorieIntakeCalories.toString(),
-                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                            onValueChange = {
-                                                if (it.isDigitsOnly()) viewModel.onCreatingCalorieIntakeCaloriesChanged(
-                                                    it.toDouble()
-                                                )
-                                            },
-                                            label = { Text(text = "Calories") }
-                                        )
-                                        OutlinedTextField(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            singleLine = true,
-                                            value = state.data.creatingCalorieIntakeQuantity.toString(),
-                                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                            onValueChange = {
-                                                if (it.isDigitsOnly()) viewModel.onCreatingCalorieIntakeQuantityChanged(
-                                                    it.toInt()
-                                                )
-                                            },
-                                            label = { Text(text = "Quantity") }
-                                        )
-                                        Row(
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Button(onClick = {
-                                                viewModel.onCreatingCalorieIntakeChanged(false)
-                                                viewModel.onCreatingCalorieIntake()
-                                            }) {
-                                                Text(text = "Create")
-                                            }
-                                            Button(onClick = {
-                                                viewModel.onCreatingCalorieIntakeChanged(
-                                                    false
-                                                )
-                                            }) {
-                                                Text(text = "Cancel")
-                                            }
-                                        }
-                                    }
+                    )
+                    InfoCard(
+                        title = "Calorie Intakes",
+                        trailingIcon = {
+                            IconButton(onClick = { viewModel.onCreatingCalorieIntakeChanged(true) }) {
+                                Icon(Icons.Default.Add, contentDescription = "Add Calorie Intake")
+                            }
+                        },
+                        content = {
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                state.data.calorieIntakes.forEach { intake ->
+                                    IntakeCard(calorieIntake = intake)
                                 }
                             }
                         }
+                    )
+                    if (state.data.creatingCalorieIntake) {
+                        CreateCalorieIntakeDialog(
+                            onDismiss = { viewModel.onCreatingCalorieIntakeChanged(false) },
+                            onCreate = {
+                                viewModel.onCreatingCalorieIntakeChanged(false)
+                                viewModel.onCreatingCalorieIntake()
+                            },
+                            intakeName = state.data.creatingCalorieIntakeName,
+                            onNameChange = viewModel::onCreatingCalorieIntakeNameChanged,
+                            intakeCalories = state.data.creatingCalorieIntakeCalories.toInt(),
+                            onCaloriesChange = {
+                                if (it.isDigitsOnly()) viewModel.onCreatingCalorieIntakeCaloriesChanged(it.toDouble())
+                            },
+                            intakeQuantity = state.data.creatingCalorieIntakeQuantity,
+                            onQuantityChange = {
+                                if (it.isDigitsOnly()) viewModel.onCreatingCalorieIntakeQuantityChanged(it.toInt())
+                            }
+                        )
                     }
                 }
             }
@@ -189,17 +126,59 @@ fun HomeScreen(
     }
 }
 
-/*fun createPanel(tdee: Double, calories: Double): Figure {
-    val data = mapOf(
-        "category" to listOf("Taken", "Remaing"),
-        "value" to listOf(calories, if (calories > tdee) 0 else tdee - calories)
-    )
-    return letsPlot(data) + geomPie(
-        stat = Stat.identity,
-        alpha = 0.8
-    ) {
-        x = "category"
-        fill = "category"
-        weight = "value"
+
+@Composable
+fun CreateCalorieIntakeDialog(
+    onDismiss: () -> Unit,
+    onCreate: () -> Unit,
+    intakeName: String,
+    onNameChange: (String) -> Unit,
+    intakeCalories: Int,
+    onCaloriesChange: (String) -> Unit,
+    intakeQuantity: Int,
+    onQuantityChange: (String) -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "Create Calorie Intake", style = MaterialTheme.typography.titleMedium)
+                OutlinedTextField(
+                    value = intakeName,
+                    onValueChange = onNameChange,
+                    label = { Text("Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = intakeCalories.toString(),
+                    onValueChange = onCaloriesChange,
+                    label = { Text("Calories") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = intakeQuantity.toString(),
+                    onValueChange = onQuantityChange,
+                    label = { Text("Quantity") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(onClick = onCreate, modifier = Modifier.weight(1f)) {
+                        Text("Create")
+                    }
+                    Button(onClick = onDismiss, modifier = Modifier.weight(1f)) {
+                        Text("Cancel")
+                    }
+                }
+            }
+        }
     }
-}*/
+}

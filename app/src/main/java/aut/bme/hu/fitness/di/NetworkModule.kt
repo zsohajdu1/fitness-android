@@ -28,23 +28,17 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
+        return OkHttpClient.Builder().addInterceptor(authInterceptor).build()
     }
 
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        val gson = GsonBuilder()
-            .registerTypeAdapter(LocalDate::class.java, LocalDateAdapter())
-            .create()
+        val gson =
+            GsonBuilder().registerTypeAdapter(LocalDate::class.java, LocalDateAdapter()).create()
 
-        return Retrofit.Builder()
-            .baseUrl("https://fitness-latest.onrender.com/")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
+        return Retrofit.Builder().baseUrl("https://fitness-latest.onrender.com/")
+            .client(okHttpClient).addConverterFactory(GsonConverterFactory.create(gson)).build()
     }
 
     @Provides

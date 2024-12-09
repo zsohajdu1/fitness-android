@@ -2,7 +2,6 @@ package aut.bme.hu.fitness.presentation.splash
 
 import androidx.lifecycle.ViewModel
 import aut.bme.hu.fitness.AUTH_SCREEN
-import aut.bme.hu.fitness.CREATION_SCREEN
 import aut.bme.hu.fitness.MAIN_SCREEN
 import aut.bme.hu.fitness.domain.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel

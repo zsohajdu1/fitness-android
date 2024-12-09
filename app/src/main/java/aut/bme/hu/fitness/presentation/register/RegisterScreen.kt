@@ -23,8 +23,7 @@ import aut.bme.hu.fitness.compose.ErrorDialog
 
 @Composable
 fun RegisterScreen(
-    navigateTo: () -> Unit,
-    viewModel: RegisterViewModel = hiltViewModel()
+    navigateTo: () -> Unit, viewModel: RegisterViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -45,8 +44,7 @@ fun RegisterScreen(
 
             is RegisterViewModel.RegisterUiState.Error -> {
                 ErrorDialog(
-                    message = state.message,
-                    onDismiss = viewModel::refresh
+                    message = state.message, onDismiss = viewModel::refresh
                 )
             }
 
@@ -60,13 +58,11 @@ fun RegisterScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
+                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         value = state.data.email,
                         onValueChange = viewModel::onEmailChanged,
-                        label = { Text(text = "Email") }
-                    )
+                        label = { Text(text = "Email") })
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
@@ -84,8 +80,7 @@ fun RegisterScreen(
                         visualTransformation = PasswordVisualTransformation()
                     )
                     Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = viewModel::onRegisterClick
+                        modifier = Modifier.fillMaxWidth(), onClick = viewModel::onRegisterClick
                     ) {
                         Text("Register")
                     }

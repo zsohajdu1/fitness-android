@@ -26,8 +26,7 @@ fun FitnessAndroidContent() {
 @Composable
 fun NavGraph(navController: NavHostController) {
     NavHost(
-        navController = navController,
-        startDestination = SPLASH_SCREEN
+        navController = navController, startDestination = SPLASH_SCREEN
     ) {
         composable(SPLASH_SCREEN) {
             SplashScreen({ route: String ->
@@ -38,14 +37,12 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(REGISTER_SCREEN) {
             RegisterScreen({
-                navController.navigate(CREATION_SCREEN) {
-                }
+                navController.navigate(CREATION_SCREEN) {}
             })
         }
         composable(LOGIN_SCREEN) {
             LoginScreen({ route: String ->
-                navController.navigate(route) {
-                }
+                navController.navigate(route) {}
             })
         }
         composable(MAIN_SCREEN) {

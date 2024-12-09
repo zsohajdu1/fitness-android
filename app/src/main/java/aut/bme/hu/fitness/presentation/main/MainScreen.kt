@@ -20,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.hilt.navigation.compose.hiltViewModel
-import aut.bme.hu.fitness.CREATION_SCREEN
 import aut.bme.hu.fitness.SPLASH_SCREEN
 import aut.bme.hu.fitness.presentation.home.HomeScreen
 import aut.bme.hu.fitness.presentation.journal.JournalScreen
@@ -28,8 +27,7 @@ import aut.bme.hu.fitness.presentation.profile.ProfileScreen
 
 @Composable
 fun MainScreen(
-    navigateTo: (String) -> Unit,
-    viewModel: MainScreenViewModel = hiltViewModel()
+    navigateTo: (String) -> Unit, viewModel: MainScreenViewModel = hiltViewModel()
 ) {
     val navItemList = listOf(
         NavItem("Journal", Icons.Default.DateRange),
@@ -45,42 +43,30 @@ fun MainScreen(
         mutableIntStateOf(1)
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            NavigationBar {
-                navItemList.forEachIndexed { index, navItem ->
-                    NavigationBarItem(
-                        selected = selectedIndex == index,
-                        onClick = {
-                            selectedIndex = index
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = navItem.icon,
-                                contentDescription = navItem.label
-                            )
-                        },
-                        label = {
-                            Text(text = navItem.label)
-                        }
+    Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = {
+        NavigationBar {
+            navItemList.forEachIndexed { index, navItem ->
+                NavigationBarItem(selected = selectedIndex == index, onClick = {
+                    selectedIndex = index
+                }, icon = {
+                    Icon(
+                        imageVector = navItem.icon, contentDescription = navItem.label
                     )
-                }
+                }, label = {
+                    Text(text = navItem.label)
+                })
             }
         }
-    ) { innerPadding ->
+    }) { innerPadding ->
         ContentScreen(
-            modifier = Modifier.padding(innerPadding),
-            selectedIndex = selectedIndex,
-            { navigateTo(SPLASH_SCREEN) }
-        )
+            modifier = Modifier.padding(innerPadding), selectedIndex = selectedIndex
+        ) { navigateTo(SPLASH_SCREEN) }
     }
 }
 
 
 data class NavItem(
-    val label: String,
-    val icon: ImageVector
+    val label: String, val icon: ImageVector
 )
 
 @Composable

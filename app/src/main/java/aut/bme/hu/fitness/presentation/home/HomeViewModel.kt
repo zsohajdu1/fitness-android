@@ -108,16 +108,17 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (_uiState.value is HomeUiState.Success) {
-                    val calorieIntake = (_uiState.value as HomeUiState.Success).data.userProfile.uid?.let {
-                        CalorieIntake(
-                            id = null,
-                            uid = it,
-                            date = LocalDate.now(),
-                            name = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeName,
-                            calories = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeCalories,
-                            quantity = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeQuantity
-                        )
-                    }
+                    val calorieIntake =
+                        (_uiState.value as HomeUiState.Success).data.userProfile.uid?.let {
+                            CalorieIntake(
+                                id = null,
+                                uid = it,
+                                date = LocalDate.now(),
+                                name = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeName,
+                                calories = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeCalories,
+                                quantity = (_uiState.value as HomeUiState.Success).data.creatingCalorieIntakeQuantity
+                            )
+                        }
                     if (calorieIntake != null) {
                         calorieIntakeRepository.createCalorieIntake(calorieIntake)
                     }

@@ -18,8 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun AuthScreen(
-    openScreen: (String) -> Unit,
-    viewModel: AuthViewModel = hiltViewModel()
+    openScreen: (String) -> Unit, viewModel: AuthViewModel = hiltViewModel()
 ) {
     Box(
         modifier = Modifier
@@ -36,8 +35,7 @@ fun AuthScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Fitness Android",
-                    fontSize = 30.sp
+                    text = "Fitness Android", fontSize = 30.sp
                 )
             }
             Button(
@@ -49,8 +47,7 @@ fun AuthScreen(
             }
 
             Button(
-                onClick = { viewModel.onLoginClick(openScreen) },
-                modifier = Modifier.fillMaxWidth()
+                onClick = { viewModel.onLoginClick(openScreen) }, modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Login")
             }
