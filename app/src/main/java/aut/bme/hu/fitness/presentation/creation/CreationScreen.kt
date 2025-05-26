@@ -3,6 +3,7 @@ package aut.bme.hu.fitness.presentation.creation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -67,7 +69,7 @@ fun CreationScreen(
             }
 
             is CreationViewModel.CreationUiState.Created -> {
-                toHome()
+                viewModel.navigateToHome(toHome)
             }
 
             is CreationViewModel.CreationUiState.Success -> {
@@ -81,7 +83,8 @@ fun CreationScreen(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         value = state.data.birthDate.toString(),
                         onValueChange = {},
@@ -119,7 +122,9 @@ fun CreationScreen(
                         }
                     }
 
-                    OutlinedTextField(singleLine = true,
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
                         value = state.data.gender.toString(),
                         onValueChange = {},
                         readOnly = true,
@@ -135,7 +140,8 @@ fun CreationScreen(
                         })
 
 
-                    DropdownMenu(expanded = state.data.changingGender,
+                    DropdownMenu(
+                        expanded = state.data.changingGender,
                         onDismissRequest = { viewModel.onChangingGenderChanged(false) }) {
                         Text(text = "Gender")
                         Gender.entries.forEach {
@@ -145,7 +151,8 @@ fun CreationScreen(
                             }, text = { Text(text = it.toString()) })
                         }
                     }
-                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         value = state.data.height.toString(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -156,7 +163,8 @@ fun CreationScreen(
                         },
                         suffix = { Text(text = " cm") },
                         label = { Text(text = "Height") })
-                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         value = state.data.weight.toString(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -167,7 +175,8 @@ fun CreationScreen(
                         },
                         suffix = { Text(text = " kg") },
                         label = { Text(text = "Weight") })
-                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         value = state.data.activityLevel.toString(),
                         onValueChange = {},
@@ -183,7 +192,8 @@ fun CreationScreen(
                             }
                         })
 
-                    DropdownMenu(expanded = state.data.changingActivityLevel,
+                    DropdownMenu(
+                        expanded = state.data.changingActivityLevel,
                         onDismissRequest = { viewModel.onChangingActivityLevelChanged(false) }) {
                         ActivityLevel.entries.forEach {
                             DropdownMenuItem(onClick = {
@@ -192,14 +202,25 @@ fun CreationScreen(
                             }, text = { Text(text = it.toString()) })
                         }
                     }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = "Track exercises manually?")
+                        Switch(
+                            checked = state.data.manualExercise,
+                            onCheckedChange = { viewModel.onManualExerciseChanged(it) })
+                    }
                     Button(onClick = {
                         viewModel.onCreateProfile()
                     }) {
                         Text(text = "Create")
                     }
-
                 }
-
             }
         }
     }

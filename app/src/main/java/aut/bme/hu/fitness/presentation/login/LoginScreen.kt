@@ -32,6 +32,18 @@ fun LoginScreen(
     LaunchedEffect(true) {
         viewModel.refresh()
     }
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is LoginViewModel.LoginUiState.SuccessWithProfile -> {
+                viewModel.navigateToMain(navigateTo)
+            }
+            is LoginViewModel.LoginUiState.SuccessWithoutProfile -> {
+                viewModel.navigateToCreation(navigateTo)
+            }
+            else -> {  }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,21 +62,14 @@ fun LoginScreen(
                 )
             }
 
-            is LoginViewModel.LoginUiState.SuccessWithProfile -> {
-                navigateTo(MAIN_SCREEN)
-            }
-
-            is LoginViewModel.LoginUiState.SuccessWithoutProfile -> {
-                navigateTo(CREATION_SCREEN)
-            }
-
             is LoginViewModel.LoginUiState.Created -> {
 
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         value = state.data.email,
                         onValueChange = viewModel::onUsernameChanged,
@@ -77,12 +82,15 @@ fun LoginScreen(
                         label = { Text(text = "Password") },
                         visualTransformation = PasswordVisualTransformation()
                     )
-                    Button(modifier = Modifier.fillMaxWidth(),
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = { viewModel.onLoginClick() }) {
                         Text("Login")
                     }
                 }
             }
+
+            else -> { }
         }
     }
 }

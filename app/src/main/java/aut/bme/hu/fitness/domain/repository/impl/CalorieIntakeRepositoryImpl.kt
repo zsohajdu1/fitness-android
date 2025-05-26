@@ -1,19 +1,18 @@
 package aut.bme.hu.fitness.domain.repository.impl
 
-import aut.bme.hu.fitness.domain.api.ApiService
+import aut.bme.hu.fitness.api.AuthenticatedApiService
 import aut.bme.hu.fitness.domain.model.CalorieIntake
 import aut.bme.hu.fitness.domain.repository.CalorieIntakeRepository
-import aut.bme.hu.fitness.domain.service.AuthService
 import java.time.LocalDate
 import javax.inject.Inject
 
 class CalorieIntakeRepositoryImpl @Inject constructor(
-    private val api: ApiService, private val authService: AuthService
+    private val api: AuthenticatedApiService
 ) : CalorieIntakeRepository {
 
     override suspend fun getDateCalorieIntakes(date: LocalDate): List<CalorieIntake> {
         try {
-            return api.getDateCalorieIntakes(date, authService.currentUserId)
+            return api.getDateCalorieIntakes(date)
         } catch (e: Exception) {
             throw e
         }

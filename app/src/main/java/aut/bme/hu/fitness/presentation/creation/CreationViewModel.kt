@@ -6,7 +6,6 @@ import aut.bme.hu.fitness.domain.model.UserProfile
 import aut.bme.hu.fitness.domain.model.enums.ActivityLevel
 import aut.bme.hu.fitness.domain.model.enums.Gender
 import aut.bme.hu.fitness.domain.repository.UserProfileRepository
-import aut.bme.hu.fitness.domain.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreationViewModel @Inject constructor(
-    private val userProfileRepository: UserProfileRepository, private val authService: AuthService
+    private val userProfileRepository: UserProfileRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<CreationUiState>(CreationUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -30,6 +29,7 @@ class CreationViewModel @Inject constructor(
         val birthDate: LocalDate,
         val gender: Gender,
         val activityLevel: ActivityLevel,
+        val manualExercise: Boolean,
         val changingActivityLevel: Boolean = false,
         val changingGender: Boolean = false,
         val changingBirthDate: Boolean = false,
@@ -47,7 +47,7 @@ class CreationViewModel @Inject constructor(
     fun refresh() {
         _uiState.value = CreationUiState.Loading
         val data = CreationUiData(
-            0, 0, LocalDate.now(), Gender.Male, ActivityLevel.Sedentary
+            0, 0, LocalDate.now(), Gender.Male, ActivityLevel.Sedentary, false
         )
         _uiState.value = CreationUiState.Success(data)
     }
@@ -124,6 +124,16 @@ class CreationViewModel @Inject constructor(
         }
     }
 
+    fun onManualExerciseChanged(value: Boolean) {
+        _uiState.update {
+            if (it is CreationUiState.Success) {
+                it.copy(data = it.data.copy(manualExercise = value))
+            } else {
+                it
+            }
+        }
+    }
+
     fun onChangingBirthDateChanged(value: Boolean) {
         _uiState.update {
             if (it is CreationUiState.Success) {
@@ -131,9 +141,7 @@ class CreationViewModel @Inject constructor(
             } else {
                 it
             }
-
         }
-
     }
 
     fun onCreateProfile() {
@@ -153,9 +161,10 @@ class CreationViewModel @Inject constructor(
                     birthDate = state.data.birthDate,
                     gender = state.data.gender,
                     activityLevel = state.data.activityLevel,
-                    uid = authService.currentUserId,
                     tdee = 0.0,
-                    id = null
+                    id = null,
+                    email = null,
+                    manualExercise = state.data.manualExercise
                 )
                 userProfileRepository.createUserProfile(userProfile)
                 _uiState.value = CreationUiState.Created
@@ -163,5 +172,9 @@ class CreationViewModel @Inject constructor(
                 _uiState.value = CreationUiState.Error(e.message ?: "Unknown error")
             }
         }
+    }
+
+    fun navigateToHome(toHome: () -> Unit) {
+        toHome()
     }
 }

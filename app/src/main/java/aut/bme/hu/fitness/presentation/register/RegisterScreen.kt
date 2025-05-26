@@ -19,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import aut.bme.hu.fitness.CREATION_SCREEN
 import aut.bme.hu.fitness.compose.ErrorDialog
+import aut.bme.hu.fitness.presentation.login.LoginViewModel
 
 @Composable
 fun RegisterScreen(
@@ -29,6 +31,15 @@ fun RegisterScreen(
 
     LaunchedEffect(true) {
         viewModel.refresh()
+    }
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is RegisterViewModel.RegisterUiState.Success -> {
+                viewModel.navigateTo(navigateTo)
+            }
+            else -> {}
+        }
     }
     Box(
         modifier = Modifier
@@ -48,17 +59,14 @@ fun RegisterScreen(
                 )
             }
 
-            is RegisterViewModel.RegisterUiState.Success -> {
-                navigateTo()
-            }
-
             is RegisterViewModel.RegisterUiState.Created -> {
 
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         value = state.data.email,
                         onValueChange = viewModel::onEmailChanged,
@@ -87,6 +95,8 @@ fun RegisterScreen(
 
                 }
             }
+
+            else -> {}
         }
     }
 }

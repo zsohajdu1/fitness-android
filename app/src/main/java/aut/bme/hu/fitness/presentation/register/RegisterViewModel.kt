@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import aut.bme.hu.fitness.common.ext.isValidEmail
 import aut.bme.hu.fitness.common.ext.isValidPassword
-import aut.bme.hu.fitness.domain.service.AuthService
+import aut.bme.hu.fitness.auth.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -90,5 +90,9 @@ class RegisterViewModel @Inject constructor(
                 _uiState.value = RegisterUiState.Error(e.message ?: "Unknown error")
             }
         }
+    }
+
+    fun navigateTo(navigateTo: () -> Unit) {
+        navigateTo()
     }
 }

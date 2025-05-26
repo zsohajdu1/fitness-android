@@ -2,14 +2,17 @@ package aut.bme.hu.fitness.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import aut.bme.hu.fitness.CREATION_SCREEN
+import aut.bme.hu.fitness.MAIN_SCREEN
 import aut.bme.hu.fitness.common.ext.isValidEmail
 import aut.bme.hu.fitness.domain.repository.UserProfileRepository
-import aut.bme.hu.fitness.domain.service.AuthService
+import aut.bme.hu.fitness.auth.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,8 +75,8 @@ class LoginViewModel @Inject constructor(
             _uiState.value = LoginUiState.Error("Enter a valid password")
         } else viewModelScope.launch {
             try {
-                authService.authenticate(state.data.email, state.data.password)
-                if (userProfileRepository.getUserProfileExists()) {
+                runBlocking { authService.authenticate(state.data.email, state.data.password) }
+                if (!userProfileRepository.getUserProfileExists()) {
                     _uiState.value = LoginUiState.SuccessWithoutProfile
                 } else {
                     _uiState.value = LoginUiState.SuccessWithProfile
@@ -82,5 +85,13 @@ class LoginViewModel @Inject constructor(
                 _uiState.value = LoginUiState.Error(e.message ?: "Unknown error")
             }
         }
+    }
+
+    fun navigateToCreation(navigateTo: (String) -> Unit) {
+        navigateTo(CREATION_SCREEN)
+    }
+
+    fun navigateToMain(navigateTo: (String) -> Unit) {
+        navigateTo(MAIN_SCREEN)
     }
 }

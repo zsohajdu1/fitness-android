@@ -37,12 +37,16 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(REGISTER_SCREEN) {
             RegisterScreen({
-                navController.navigate(CREATION_SCREEN) {}
+                navController.navigate(CREATION_SCREEN) {
+                    popUpTo(0) { inclusive = true }
+                }
             })
         }
         composable(LOGIN_SCREEN) {
             LoginScreen({ route: String ->
-                navController.navigate(route) {}
+                navController.navigate(route) {
+                    popUpTo(0) { inclusive = true }
+                }
             })
         }
         composable(MAIN_SCREEN) {

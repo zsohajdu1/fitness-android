@@ -1,6 +1,6 @@
-package aut.bme.hu.fitness.domain.api
+package aut.bme.hu.fitness.auth
 
-import aut.bme.hu.fitness.domain.service.AuthService
+import aut.bme.hu.fitness.auth.service.AuthService
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -17,7 +17,7 @@ class AuthInterceptor @Inject constructor(
             return chain.proceed(originalRequest)
         }
 
-        val token = runBlocking { authService.getAuthToken() }
+        val token = authService.getAccessToken()
         val modifiedRequest: Request =
             originalRequest.newBuilder().header("Authorization", "Bearer $token").build()
 

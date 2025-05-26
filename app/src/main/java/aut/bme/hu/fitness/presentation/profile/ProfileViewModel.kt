@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import aut.bme.hu.fitness.domain.model.UserProfile
 import aut.bme.hu.fitness.domain.model.enums.ActivityLevel
 import aut.bme.hu.fitness.domain.repository.UserProfileRepository
-import aut.bme.hu.fitness.domain.service.AuthService
+import aut.bme.hu.fitness.auth.service.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +25,8 @@ class ProfileViewModel @Inject constructor(
         val newHeight: Int,
         val newWeight: Int,
         val newActivityLevel: ActivityLevel,
-        val changingActivityLevel: Boolean = false
+        val changingActivityLevel: Boolean = false,
+        val newManualExercise: Boolean = false
     )
 
     sealed class ProfileUiState {
@@ -93,6 +94,16 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    fun onNewManualExerciseChanged(value: Boolean) {
+        _uiState.update {
+            if (it is ProfileUiState.Success) {
+                it.copy(data = it.data.copy(newManualExercise = value))
+            } else {
+                it
+            }
+        }
+    }
+
     fun onUpdateProfile() {
         viewModelScope.launch {
             try {
@@ -100,13 +111,14 @@ class ProfileViewModel @Inject constructor(
                     val userProfile = (_uiState.value as ProfileUiState.Success).data.userProfile
                     val newUserProfile = UserProfile(
                         id = userProfile.id,
-                        uid = userProfile.uid,
+                        email = userProfile.email,
                         birthDate = userProfile.birthDate,
                         gender = userProfile.gender,
                         height = (_uiState.value as ProfileUiState.Success).data.newHeight,
                         weight = (_uiState.value as ProfileUiState.Success).data.newWeight,
                         activityLevel = (_uiState.value as ProfileUiState.Success).data.newActivityLevel,
-                        tdee = userProfile.tdee
+                        tdee = userProfile.tdee,
+                        manualExercise = (_uiState.value as ProfileUiState.Success).data.newManualExercise
                     )
                     _uiState.value = ProfileUiState.Loading
                     userProfileRepository.saveUserProfile(newUserProfile)

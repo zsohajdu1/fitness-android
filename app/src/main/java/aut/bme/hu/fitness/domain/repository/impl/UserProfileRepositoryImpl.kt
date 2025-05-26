@@ -1,18 +1,17 @@
 package aut.bme.hu.fitness.domain.repository.impl
 
-import aut.bme.hu.fitness.domain.api.ApiService
+import aut.bme.hu.fitness.api.AuthenticatedApiService
 import aut.bme.hu.fitness.domain.model.UserProfile
 import aut.bme.hu.fitness.domain.repository.UserProfileRepository
-import aut.bme.hu.fitness.domain.service.AuthService
 import javax.inject.Inject
 
 class UserProfileRepositoryImpl @Inject constructor(
-    private val api: ApiService, private val authService: AuthService
+    private val api: AuthenticatedApiService
 ) : UserProfileRepository {
 
     override suspend fun getUserProfile(): UserProfile? {
         try {
-            return api.getUserProfile(authService.currentUserId)
+            return api.getUserProfile()
         } catch (e: Exception) {
             throw e
         }
@@ -21,7 +20,7 @@ class UserProfileRepositoryImpl @Inject constructor(
     override suspend fun getUserProfileExists(): Boolean {
         try {
 
-            return api.getUserProfileExists(authService.currentUserId)
+            return api.getUserProfileExists()
         } catch (e: Exception) {
             throw e
         }
