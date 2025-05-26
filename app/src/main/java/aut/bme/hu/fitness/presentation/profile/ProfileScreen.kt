@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -130,6 +131,18 @@ fun ProfileScreen(
                                 viewModel.onNewActivityLevelChanged(it)
                             }, text = { Text(text = it.toString()) })
                         }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Track exercises manually?")
+                        Switch(
+                            checked = state.data.newManualExercise,
+                            onCheckedChange = { viewModel.onNewManualExerciseChanged(it) }
+                        )
                     }
 
                     OutlinedTextField(modifier = Modifier.fillMaxWidth(),

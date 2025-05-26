@@ -1,4 +1,4 @@
-package aut.bme.hu.fitness.domain.api.jsonAdapter
+package aut.bme.hu.fitness.api.jsonAdapter
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer

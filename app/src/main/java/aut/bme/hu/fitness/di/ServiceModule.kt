@@ -1,22 +1,28 @@
 package aut.bme.hu.fitness.di
 
-import aut.bme.hu.fitness.domain.service.AuthService
-import aut.bme.hu.fitness.domain.service.impl.AuthServiceImpl
-import dagger.Binds
+import android.content.Context
+import aut.bme.hu.fitness.api.UnauthenticatedApiService
+import aut.bme.hu.fitness.auth.service.AuthService
+import aut.bme.hu.fitness.auth.service.impl.AuthServiceImpl
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class ServiceModule {
+class ServiceModule {
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindAuthService(
-        authServiceImpl: AuthServiceImpl
-    ): AuthService
+    fun provideAuthService(
+        unauthenticatedApiService: UnauthenticatedApiService,
+        @ApplicationContext context: Context
+    ): AuthService {
+        return AuthServiceImpl(unauthenticatedApiService, context)
+    }
 
 }

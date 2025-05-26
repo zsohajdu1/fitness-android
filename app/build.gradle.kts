@@ -64,6 +64,7 @@ dependencies {
     implementation("org.jetbrains.lets-plot:lets-plot-compose:1.0.4")
     implementation("org.jetbrains.lets-plot:lets-plot-common:4.4.1")
     implementation("org.jetbrains.lets-plot:lets-plot-kotlin-kernel:4.8.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

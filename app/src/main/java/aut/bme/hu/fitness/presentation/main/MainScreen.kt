@@ -58,9 +58,9 @@ fun MainScreen(
             }
         }
     }) { innerPadding ->
-        ContentScreen(
-            modifier = Modifier.padding(innerPadding), selectedIndex = selectedIndex
-        ) { navigateTo(SPLASH_SCREEN) }
+        ContentScreen(modifier = Modifier.padding(innerPadding),
+            selectedIndex = selectedIndex,
+            logOut = { navigateTo(SPLASH_SCREEN) })
     }
 }
 
