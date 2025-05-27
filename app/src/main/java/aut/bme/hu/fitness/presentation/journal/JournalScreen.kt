@@ -36,6 +36,7 @@ import aut.bme.hu.fitness.compose.ExerciseCard
 
 @Composable
 fun JournalScreen(
+    modifier: Modifier = Modifier,
     viewModel: JournalViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -45,7 +46,7 @@ fun JournalScreen(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         contentAlignment = Alignment.TopCenter

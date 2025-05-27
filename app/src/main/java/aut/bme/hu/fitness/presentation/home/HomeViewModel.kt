@@ -6,6 +6,7 @@ import aut.bme.hu.fitness.domain.model.CalorieIntake
 import aut.bme.hu.fitness.domain.model.Exercise
 import aut.bme.hu.fitness.domain.model.Steps
 import aut.bme.hu.fitness.domain.model.UserProfile
+import aut.bme.hu.fitness.domain.model.enums.Gender
 import aut.bme.hu.fitness.domain.repository.CalorieIntakeRepository
 import aut.bme.hu.fitness.domain.repository.ExerciseRepository
 import aut.bme.hu.fitness.domain.repository.StepsRepository
@@ -34,6 +35,7 @@ class HomeViewModel @Inject constructor(
         val calorieIntakes: List<CalorieIntake>,
         val exercises: List<Exercise>,
         val steps: Steps,
+        val tdee: Double,
         val creatingCalorieIntake: Boolean,
         val creatingCalorieIntakeName: String,
         val creatingCalorieIntakeCalories: Double,
@@ -59,22 +61,31 @@ class HomeViewModel @Inject constructor(
                 val calorieIntakes = calorieIntakeRepository.getDateCalorieIntakes(LocalDate.now())
                 val exercises = exerciseRepository.getDateExercises(LocalDate.now())
                 val steps = stepsRepository.getDateSteps(LocalDate.now())
-                val data = userProfile?.let {
-                    HomeUiData(
-                        it,
-                        calorieIntakes,
-                        exercises,
-                        steps,
-                        false,
-                        "",
-                        0.0,
-                        0,
-                        false,
-                        "",
-                        0.0
-                    )
+                val tdee : Double
+                if (userProfile?.manualExercise == true) {
+                    val stepsCalories : Double = when (userProfile.gender) {
+                        Gender.Male -> steps.count * userProfile.weight * 0.00057
+                        Gender.Female -> steps.count * userProfile.weight * 0.0005
+                    }
+                    val exerciseCalories = exercises.sumOf { it.calories.toInt() }
+                    tdee = stepsCalories + exerciseCalories + userProfile.tdee!!
                 }
-                _uiState.value = data?.let { HomeUiState.Success(it) }!!
+                else tdee = userProfile?.tdee!!
+                val data = HomeUiData(
+                    userProfile,
+                    calorieIntakes,
+                    exercises,
+                    steps,
+                    tdee,
+                    false,
+                    "",
+                    0.0,
+                    0,
+                    false,
+                    "",
+                    0.0
+                )
+                _uiState.value = data.let { HomeUiState.Success(it) }
             } catch (e: Exception) {
                 _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
             }

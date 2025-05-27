@@ -30,9 +30,7 @@ fun StepCounterObserver(
                 else -> Unit
             }
         }
-
         lifecycleOwner.lifecycle.addObserver(observer)
-
         onDispose {
             manager.stopListening()
             lifecycleOwner.lifecycle.removeObserver(observer)

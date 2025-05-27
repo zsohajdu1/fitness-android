@@ -72,8 +72,8 @@ data class NavItem(
 @Composable
 fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, logOut: () -> Unit) {
     when (selectedIndex) {
-        0 -> JournalScreen()
-        1 -> HomeScreen()
-        2 -> ProfileScreen(logOut)
+        0 -> JournalScreen(modifier)
+        1 -> HomeScreen(modifier)
+        2 -> ProfileScreen(modifier, logOut)
     }
 }

@@ -36,7 +36,9 @@ import aut.bme.hu.fitness.domain.model.enums.ActivityLevel
 
 @Composable
 fun ProfileScreen(
-    logOut: () -> Unit, viewModel: ProfileViewModel = hiltViewModel()
+    modifier: Modifier = Modifier,
+    logOut: () -> Unit,
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -45,7 +47,7 @@ fun ProfileScreen(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(16.dp),
@@ -92,6 +94,7 @@ fun ProfileScreen(
                             if (it.isDigitsOnly()) viewModel.onNewHeightChanged(
                                 it.toInt()
                             )
+                            else viewModel.onNewHeightChanged(0)
                         },
                         suffix = { Text(text = " cm") },
                         label = { Text(text = "Height") })
@@ -103,6 +106,7 @@ fun ProfileScreen(
                             if (it.isDigitsOnly()) viewModel.onNewWeightChanged(
                                 it.toInt()
                             )
+                            else viewModel.onNewWeightChanged(0)
                         },
                         suffix = { Text(text = " kg") },
                         label = { Text(text = "Weight") })

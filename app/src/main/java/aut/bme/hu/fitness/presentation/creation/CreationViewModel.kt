@@ -1,5 +1,6 @@
 package aut.bme.hu.fitness.presentation.creation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import aut.bme.hu.fitness.domain.model.UserProfile
@@ -125,6 +126,7 @@ class CreationViewModel @Inject constructor(
     }
 
     fun onManualExerciseChanged(value: Boolean) {
+        Log.d("CreationViewModel", "onManualExerciseChanged: $value")
         _uiState.update {
             if (it is CreationUiState.Success) {
                 it.copy(data = it.data.copy(manualExercise = value))

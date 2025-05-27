@@ -41,6 +41,7 @@ import aut.bme.hu.fitness.presentation.steps.StepCounterObserver
 
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -50,7 +51,7 @@ fun HomeScreen(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp), contentAlignment = Alignment.Center
     ) {
@@ -82,18 +83,12 @@ fun HomeScreen(
                             Column {
                                 InfoRow(
                                     label = "Total Daily Energy Expenditure",
-                                    value = state.data.userProfile.tdee?.toInt().toString()
+                                    value = state.data.tdee.toInt().toString()
                                 )
                                 InfoRow(
                                     label = "Total Calories",
                                     value = state.data.calorieIntakes.sumOf { it.calories.toInt() }
                                         .toString())
-                                if (state.data.userProfile.manualExercise) {
-                                    InfoRow(
-                                        label = "Total Burned",
-                                        value = state.data.exercises.sumOf { it.calories.toInt() }
-                                            .toString())
-                                }
                                 InfoRow(label = "Steps", value = state.data.steps.count.toString())
                             }
                         })
@@ -122,12 +117,14 @@ fun HomeScreen(
                                 if (it.isDigitsOnly()) viewModel.onCreatingCalorieIntakeCaloriesChanged(
                                     it.toDouble()
                                 )
+                                else viewModel.onCreatingCalorieIntakeCaloriesChanged(0.0)
                             },
                             intakeQuantity = state.data.creatingCalorieIntakeQuantity,
                             onQuantityChange = {
                                 if (it.isDigitsOnly()) viewModel.onCreatingCalorieIntakeQuantityChanged(
                                     it.toInt()
                                 )
+                                else viewModel.onCreatingCalorieIntakeQuantityChanged(0)
                             })
                     }
 
@@ -159,6 +156,7 @@ fun HomeScreen(
                                 if (it.isDigitsOnly()) viewModel.onCreatingExerciseCaloriesChanged(
                                     it.toDouble()
                                 )
+                                else viewModel.onCreatingExerciseCaloriesChanged(0.0)
                             })
                     }
 

@@ -25,8 +25,8 @@ class ProfileViewModel @Inject constructor(
         val newHeight: Int,
         val newWeight: Int,
         val newActivityLevel: ActivityLevel,
+        val newManualExercise: Boolean,
         val changingActivityLevel: Boolean = false,
-        val newManualExercise: Boolean = false
     )
 
     sealed class ProfileUiState {
@@ -44,7 +44,7 @@ class ProfileViewModel @Inject constructor(
                 val userProfile = userProfileRepository.getUserProfile()
                 val data = userProfile?.let {
                     ProfileUiData(
-                        it, userProfile.height, userProfile.weight, userProfile.activityLevel
+                        it, userProfile.height, userProfile.weight, userProfile.activityLevel, userProfile.manualExercise
                     )
                 }
                 _uiState.value = data?.let { ProfileUiState.Success(it) }!!
